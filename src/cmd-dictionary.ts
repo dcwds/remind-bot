@@ -1,3 +1,0 @@
-const cmdDict = {
-  remind: () => "handler"
-}
