@@ -1,4 +1,10 @@
 import cmdParse from "./cmd-parse"
 import { cmdChar, cmdDict } from "./config"
 
-console.log(cmdParse(cmdChar, cmdDict, "!remind this is a test"))
+const { cmdHandler, parsedMsg } = cmdParse(
+  cmdChar,
+  cmdDict,
+  "!remind 40min this is a test"
+)
+
+console.log(cmdHandler(parsedMsg))
