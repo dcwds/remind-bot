@@ -1,13 +1,10 @@
 import { append, find, includes, keys, length, match, reduce } from "rambda"
 import { DateTime } from "luxon"
 import { Reminder } from "../../types"
-import { writeFile, NoParamCallback } from "fs"
-import { remindersPath } from "../../config"
-import reminders from "../../data/reminders.json"
 
-type TimeUnitKeywordsDictionary = typeof timeUnitKeywordsDict
+type TimeDictionary = typeof timeDict
 
-const timeUnitKeywordsDict = {
+export const timeDict = {
   seconds: ["s", "sec", "second", "secs", "seconds"],
   minutes: ["m", "min", "minute", "mins", "minutes"],
   hours: ["h", "hr", "hour", "hrs", "hours"],
@@ -28,10 +25,10 @@ const getReminderTimeAmount = (amountMatch: readonly string[]) =>
     ? Number(amountMatch[0])
     : null
 const getReminderTimeUnit = (
-  unitKeywordMatch: readonly string[],
-  keywordMap: TimeUnitKeywordsDictionary
+  unitMatch: readonly string[],
+  dict: TimeDictionary
 ) => {
-  const unit = getTimeUnitFromDict(unitKeywordMatch[0], keywordMap)
+  const unit = getTimeUnitFromDict(unitMatch[0], dict)
 
   if (unit) {
     return String(unit)
@@ -42,21 +39,17 @@ const getReminderTimeUnit = (
 const getReminderText = (textMatch: readonly string[]) =>
   length(textMatch) ? textMatch[0] : null
 
-const getTimeUnitFromDict = (
-  unit: string | null,
-  dict: TimeUnitKeywordsDictionary
-) => find((keyword) => includes(unit, dict[keyword]), keys(dict))
+const getTimeUnitFromDict = (unit: string | null, dict: TimeDictionary) =>
+  find((keyword) => includes(unit, dict[keyword]), keys(dict))
 
 export const getReminder = (
   msg: string,
   now: DateTime,
-  reminders: Reminder[]
+  reminders: Reminder[],
+  timeDict: TimeDictionary
 ): Reminder | null => {
   const timeAmount = getReminderTimeAmount(matchReminderTimeAmount(msg))
-  const timeUnit = getReminderTimeUnit(
-    matchReminderTimeUnit(msg),
-    timeUnitKeywordsDict
-  )
+  const timeUnit = getReminderTimeUnit(matchReminderTimeUnit(msg), timeDict)
   const text = getReminderText(matchReminderText(msg))
 
   if (timeAmount && timeUnit && text) {
@@ -71,19 +64,22 @@ export const getReminder = (
   }
 }
 
-export const writeReminderToFile = (
-  reminder: Reminder,
+const remind = (
+  msg: string,
   reminders: Reminder[],
-  path: string,
-  cb: NoParamCallback
-) => writeFile(path, JSON.stringify(append(reminder, reminders)), "utf8", cb)
-
-const remind = (msg: string) => {
-  const reminder = getReminder(msg, DateTime.local(), reminders)
+  remindersPath: string,
+  writeFileFn: Function,
+  now: DateTime,
+  timeDict: TimeDictionary
+) => {
+  const reminder = getReminder(msg, now, reminders, timeDict)
 
   if (reminder) {
-    writeReminderToFile(reminder, reminders, remindersPath, () =>
-      console.log(`reminders:\n ${JSON.parse(JSON.stringify(reminders))}`)
+    writeFileFn(
+      remindersPath,
+      JSON.stringify(append(reminder, reminders)),
+      "utf8",
+      () => console.log(`reminders:\n ${JSON.parse(JSON.stringify(reminders))}`)
     )
   }
 }

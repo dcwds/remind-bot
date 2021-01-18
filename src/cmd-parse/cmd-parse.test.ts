@@ -8,11 +8,22 @@ describe("cmdParse", () => {
     mockParse = cmdParse(cmdChar, cmdDict)
   })
 
-  it("parses successfully when a valid command is used", () => {
-    expect(mockParse("!remind this is a test")).toEqual({
+  it("parses successfully when using a valid command", () => {
+    expect(mockParse("!remind 4d this is a test")).toEqual({
       cmd: "remind",
-      cmdHandler: cmdDict["remind"],
-      parsedMsg: "this is a test",
+      handler: cmdDict["remind"].handler,
+      deps: cmdDict["remind"].deps,
+      msg: "4d this is a test",
+      error: null
+    })
+  })
+
+  it("parses successfully when using a valid command alias", () => {
+    expect(mockParse("!r 4d this is a test")).toEqual({
+      cmd: "remind",
+      handler: cmdDict["remind"].handler,
+      deps: cmdDict["remind"].deps,
+      msg: "4d this is a test",
       error: null
     })
   })

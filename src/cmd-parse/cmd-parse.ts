@@ -1,4 +1,4 @@
-import { curry } from "rambda"
+import { curry, find, includes, keys } from "rambda"
 import { CommandDictionary, CommandParserResults } from "../types"
 
 const cmdParse = (
@@ -9,28 +9,35 @@ const cmdParse = (
   const isCommandLike = cmdChar === msg.substring(0, 1)
 
   if (isCommandLike) {
-    const command = msg.substring(1, msg.indexOf(" "))
+    const parsedCmd = msg.substring(1, msg.indexOf(" "))
+    const cmdFromDict = find(
+      (cmd: string) => includes(parsedCmd, cmdDict[cmd].aliases),
+      keys(cmdDict) as string[]
+    )
 
-    if (!!cmdDict[command]) {
+    if (cmdFromDict) {
       return {
-        cmd: command,
-        cmdHandler: cmdDict[command],
-        parsedMsg: msg.substring(msg.indexOf(" ") + 1, msg.length),
+        cmd: cmdFromDict,
+        handler: cmdDict[cmdFromDict].handler,
+        deps: cmdDict[cmdFromDict].deps,
+        msg: msg.substring(msg.indexOf(" ") + 1, msg.length),
         error: null
       }
     } else {
       return {
         cmd: null,
-        cmdHandler: null,
-        parsedMsg: null,
-        error: `Could not find command ${command}`
+        handler: null,
+        deps: null,
+        msg: null,
+        error: `Could not find command ${parsedCmd}`
       }
     }
   } else {
     return {
       cmd: null,
-      cmdHandler: null,
-      parsedMsg: null,
+      handler: null,
+      deps: null,
+      msg: null,
       error: "No command found."
     }
   }

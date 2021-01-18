@@ -1,12 +1,17 @@
 export type CommandParserResults = {
   cmd: string | null
-  cmdHandler: Function | null
-  parsedMsg: string | null
+  handler: Function | null
+  deps: any[] | null
+  msg: string | null
   error: string | null
 }
 
 export type CommandDictionary = {
-  [key: string]: Function
+  [key: string]: {
+    aliases: string[]
+    handler: Function
+    deps: any[]
+  }
 }
 
 export type TimeUnit =
