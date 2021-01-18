@@ -1,0 +1,19 @@
+{
+  "name": "remind-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@gitlab.com/dcwds/remind-bot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://gitlab.com/dcwds/remind-bot/issues"
+  },
+  "homepage": "https://gitlab.com/dcwds/remind-bot#readme"
+}
