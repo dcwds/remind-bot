@@ -25,7 +25,13 @@ export type TimeUnit =
 
 export type Reminder = {
   id: number
-  text: string
+  message: string
   createdAt: number
+  remindAt: number
+  hasReminded: boolean
+}
+
+export type ReminderJob = {
+  message: string
   remindAt: number
 }

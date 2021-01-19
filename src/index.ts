@@ -4,7 +4,7 @@ import { cmdChar, cmdDict } from "./config"
 const { handler, deps, msg } = cmdParse(
   cmdChar,
   cmdDict,
-  "!remind 40min this is a test"
+  "!remind 5s this is a test"
 )
 
 console.log(handler(msg, ...deps))

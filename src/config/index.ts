@@ -1,5 +1,5 @@
 import { CommandDictionary } from "../types"
-import { DateTime } from "luxon"
+import { getUnixTime, add } from "date-fns/fp"
 import { writeFile } from "fs"
 import remindHandler, { timeDict } from "../cmd-handlers/remind/remind"
 import reminders from "../data/reminders.json"
@@ -12,6 +12,6 @@ export const cmdDict: CommandDictionary = {
   remind: {
     aliases: ["remind", "r"],
     handler: remindHandler,
-    deps: [reminders, remindersPath, writeFile, DateTime.local(), timeDict]
+    deps: [reminders, remindersPath, writeFile, { getUnixTime, add }, timeDict]
   }
 }

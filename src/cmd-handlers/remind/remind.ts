@@ -1,5 +1,4 @@
 import { append, find, includes, keys, length, match, reduce } from "rambda"
-import { DateTime } from "luxon"
 import { Reminder } from "../../types"
 
 type TimeDictionary = typeof timeDict
@@ -18,7 +17,7 @@ const getReminderId = (reminders: Reminder[]) =>
   reduce((maxId, reminder) => Math.max(reminder.id, maxId), -1, reminders) + 1
 const matchReminderTimeAmount = (msg: string) => match(/^\d+/, msg)
 const matchReminderTimeUnit = (msg: string) => match(/(?<=\d+)[a-z]+/i, msg)
-const matchReminderText = (msg: string) => match(/(?<=\s).*/, msg)
+const matchReminderMessage = (msg: string) => match(/(?<=\s).*/, msg)
 
 const getReminderTimeAmount = (amountMatch: readonly string[]) =>
   length(amountMatch) && !isNaN(Number(amountMatch[0]))
@@ -36,7 +35,7 @@ const getReminderTimeUnit = (
     return null
   }
 }
-const getReminderText = (textMatch: readonly string[]) =>
+const getReminderMessage = (textMatch: readonly string[]) =>
   length(textMatch) ? textMatch[0] : null
 
 const getTimeUnitFromDict = (unit: string | null, dict: TimeDictionary) =>
@@ -44,20 +43,24 @@ const getTimeUnitFromDict = (unit: string | null, dict: TimeDictionary) =>
 
 export const getReminder = (
   msg: string,
-  now: DateTime,
+  dateAPI: any,
   reminders: Reminder[],
   timeDict: TimeDictionary
 ): Reminder | null => {
   const timeAmount = getReminderTimeAmount(matchReminderTimeAmount(msg))
   const timeUnit = getReminderTimeUnit(matchReminderTimeUnit(msg), timeDict)
-  const text = getReminderText(matchReminderText(msg))
+  const message = getReminderMessage(matchReminderMessage(msg))
 
-  if (timeAmount && timeUnit && text) {
+  if (timeAmount && timeUnit && message) {
+    const { getUnixTime, add } = dateAPI
+    const now = new Date()
+
     return {
       id: getReminderId(reminders),
-      text,
-      createdAt: now.toMillis(),
-      remindAt: now.plus({ [timeUnit]: timeAmount }).toMillis()
+      message,
+      createdAt: getUnixTime(now),
+      remindAt: getUnixTime(add({ [timeUnit]: timeAmount }, now)),
+      hasReminded: false
     }
   } else {
     return null
@@ -69,10 +72,10 @@ const remind = (
   reminders: Reminder[],
   remindersPath: string,
   writeFileFn: Function,
-  now: DateTime,
+  dateAPI: any,
   timeDict: TimeDictionary
 ) => {
-  const reminder = getReminder(msg, now, reminders, timeDict)
+  const reminder = getReminder(msg, dateAPI, reminders, timeDict)
 
   if (reminder) {
     writeFileFn(
