@@ -18,8 +18,8 @@ describe("command handler: remind", () => {
           channelId: "someid",
           content: "4d this is a test"
         },
-        { getUnixTime, add },
         mockReminders,
+        { getUnixTime, add },
         timeDict
       )
     ).toEqual({
@@ -43,8 +43,8 @@ describe("command handler: remind", () => {
           channelId: "someid",
           content: "invalid input"
         },
-        { getUnixTime, add },
         mockReminders,
+        { getUnixTime, add },
         timeDict
       )
     ).toBeFalsy()

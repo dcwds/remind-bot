@@ -36,8 +36,3 @@ export type Reminder = {
   remindAt: number
   hasReminded: boolean
 }
-
-export type ReminderJob = {
-  message: string
-  remindAt: number
-}

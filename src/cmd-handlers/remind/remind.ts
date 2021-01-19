@@ -1,4 +1,5 @@
 import { append, find, includes, keys, length, match, reduce } from "rambda"
+import { writeReminderToDB } from "./remind-db"
 import { Reminder, DiscordMessage } from "../../types"
 
 type TimeDictionary = typeof timeDict
@@ -43,8 +44,8 @@ const getTimeUnitFromDict = (unit: string | null, dict: TimeDictionary) =>
 
 export const getReminder = (
   msg: DiscordMessage,
-  dateAPI: any,
   reminders: Reminder[],
+  dateAPI: any,
   timeDict: TimeDictionary
 ): Reminder | null => {
   const { authorId, channelId, content } = msg
@@ -80,14 +81,11 @@ const remind = (
   dateAPI: any,
   timeDict: TimeDictionary
 ) => {
-  const reminder = getReminder(msg, dateAPI, reminders, timeDict)
+  const reminder = getReminder(msg, reminders, dateAPI, timeDict)
 
   if (reminder) {
-    writeFileFn(
-      remindersPath,
-      JSON.stringify(append(reminder, reminders)),
-      "utf8",
-      () => console.log(`reminders:\n ${JSON.parse(JSON.stringify(reminders))}`)
+    writeReminderToDB(reminder, reminders, remindersPath, writeFileFn, () =>
+      console.log("Reminder written to database.")
     )
   }
 }
