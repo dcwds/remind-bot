@@ -9,30 +9,62 @@ describe("cmdParse", () => {
   })
 
   it("parses successfully when using a valid command", () => {
-    expect(mockParse("!remind 4d this is a test")).toEqual({
+    expect(
+      mockParse({
+        authorId: "someid",
+        channelId: "someid",
+        content: "!remind 4d this is a test"
+      })
+    ).toEqual({
       cmd: "remind",
       handler: cmdDict["remind"].handler,
       deps: cmdDict["remind"].deps,
-      msg: "4d this is a test",
+      msg: {
+        authorId: "someid",
+        channelId: "someid",
+        content: "4d this is a test"
+      },
       error: null
     })
   })
 
   it("parses successfully when using a valid command alias", () => {
-    expect(mockParse("!r 4d this is a test")).toEqual({
+    expect(
+      mockParse({
+        authorId: "someid",
+        channelId: "someid",
+        content: "!r 4d this is a test"
+      })
+    ).toEqual({
       cmd: "remind",
       handler: cmdDict["remind"].handler,
       deps: cmdDict["remind"].deps,
-      msg: "4d this is a test",
+      msg: {
+        authorId: "someid",
+        channelId: "someid",
+        content: "4d this is a test"
+      },
       error: null
     })
   })
 
   it("parses with an error when an invalid command is used", () => {
-    expect(mockParse("!badcommand this is a test").error).toBeTruthy()
+    expect(
+      mockParse({
+        authorId: "someid",
+        channelId: "someid",
+        content: "!badcommand this is a test"
+      }).error
+    ).toBeTruthy()
   })
 
   it("parses with an error when no command is used", () => {
-    expect(mockParse("this is a test").error).toBeTruthy()
+    expect(
+      mockParse({
+        authorId: "someid",
+        channelId: "someid",
+        content: "this is a test"
+      }).error
+    ).toBeTruthy()
   })
 })

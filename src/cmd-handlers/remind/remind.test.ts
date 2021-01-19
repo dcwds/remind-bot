@@ -13,14 +13,22 @@ describe("command handler: remind", () => {
   it("creates a reminder from valid input", () => {
     expect(
       getReminder(
-        "4d this is a test",
+        {
+          authorId: "someid",
+          channelId: "someid",
+          content: "4d this is a test"
+        },
         { getUnixTime, add },
         mockReminders,
         timeDict
       )
     ).toEqual({
       id: 0,
-      message: "this is a test",
+      message: {
+        authorId: "someid",
+        channelId: "someid",
+        content: "this is a test"
+      },
       createdAt: getUnixTime(now),
       remindAt: getUnixTime(add({ days: 4 }, now)),
       hasReminded: false
@@ -30,7 +38,11 @@ describe("command handler: remind", () => {
   it("doesn't create a reminder from invalid input", () => {
     expect(
       getReminder(
-        "invalid input",
+        {
+          authorId: "someid",
+          channelId: "someid",
+          content: "invalid input"
+        },
         { getUnixTime, add },
         mockReminders,
         timeDict

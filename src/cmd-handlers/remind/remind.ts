@@ -1,5 +1,5 @@
 import { append, find, includes, keys, length, match, reduce } from "rambda"
-import { Reminder } from "../../types"
+import { Reminder, DiscordMessage } from "../../types"
 
 type TimeDictionary = typeof timeDict
 
@@ -42,22 +42,27 @@ const getTimeUnitFromDict = (unit: string | null, dict: TimeDictionary) =>
   find((keyword) => includes(unit, dict[keyword]), keys(dict))
 
 export const getReminder = (
-  msg: string,
+  msg: DiscordMessage,
   dateAPI: any,
   reminders: Reminder[],
   timeDict: TimeDictionary
 ): Reminder | null => {
-  const timeAmount = getReminderTimeAmount(matchReminderTimeAmount(msg))
-  const timeUnit = getReminderTimeUnit(matchReminderTimeUnit(msg), timeDict)
-  const message = getReminderMessage(matchReminderMessage(msg))
+  const { authorId, channelId, content } = msg
+  const timeAmount = getReminderTimeAmount(matchReminderTimeAmount(content))
+  const timeUnit = getReminderTimeUnit(matchReminderTimeUnit(content), timeDict)
+  const parsedMessage = getReminderMessage(matchReminderMessage(content))
 
-  if (timeAmount && timeUnit && message) {
+  if (timeAmount && timeUnit && parsedMessage) {
     const { getUnixTime, add } = dateAPI
     const now = new Date()
 
     return {
       id: getReminderId(reminders),
-      message,
+      message: {
+        authorId,
+        channelId,
+        content: parsedMessage
+      },
       createdAt: getUnixTime(now),
       remindAt: getUnixTime(add({ [timeUnit]: timeAmount }, now)),
       hasReminded: false
@@ -68,7 +73,7 @@ export const getReminder = (
 }
 
 const remind = (
-  msg: string,
+  msg: DiscordMessage,
   reminders: Reminder[],
   remindersPath: string,
   writeFileFn: Function,
