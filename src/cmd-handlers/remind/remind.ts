@@ -1,6 +1,7 @@
-import { append, find, includes, keys, length, match, reduce } from "rambda"
-import { writeReminderToDB } from "./remind-db"
-import { Reminder, DiscordMessage } from "../../types"
+import { find, includes, keys, length, match, reduce } from "rambda"
+import { writeReminderToDB, updateReminderInDB } from "./remind-db"
+import { remindJob } from "./remind-jobs"
+import { RemindDependencies, Reminder, DiscordMessage } from "../../types"
 
 type TimeDictionary = typeof timeDict
 
@@ -44,21 +45,21 @@ const getTimeUnitFromDict = (unit: string | null, dict: TimeDictionary) =>
 
 export const getReminder = (
   msg: DiscordMessage,
-  reminders: Reminder[],
-  dateAPI: any,
-  timeDict: TimeDictionary
+  deps: RemindDependencies
 ): Reminder | null => {
+  const { getReminders, dateFns } = deps
   const { authorId, channelId, content } = msg
+
   const timeAmount = getReminderTimeAmount(matchReminderTimeAmount(content))
   const timeUnit = getReminderTimeUnit(matchReminderTimeUnit(content), timeDict)
   const parsedMessage = getReminderMessage(matchReminderMessage(content))
 
   if (timeAmount && timeUnit && parsedMessage) {
-    const { getUnixTime, add } = dateAPI
+    const { getUnixTime, add } = dateFns
     const now = new Date()
 
     return {
-      id: getReminderId(reminders),
+      id: getReminderId(getReminders()),
       message: {
         authorId,
         channelId,
@@ -73,20 +74,29 @@ export const getReminder = (
   }
 }
 
-const remind = (
-  msg: DiscordMessage,
-  reminders: Reminder[],
-  remindersPath: string,
-  writeFileFn: Function,
-  dateAPI: any,
-  timeDict: TimeDictionary
-) => {
-  const reminder = getReminder(msg, reminders, dateAPI, timeDict)
+const remind = (msg: DiscordMessage, deps: RemindDependencies) => {
+  const reminder = getReminder(msg, deps)
 
   if (reminder) {
-    writeReminderToDB(reminder, reminders, remindersPath, writeFileFn, () =>
-      console.log("Reminder written to database.")
-    )
+    console.log(`created reminder with id of ${reminder.id}`)
+
+    writeReminderToDB(reminder, deps, () => {
+      console.log(`reminder with id of ${reminder.id} has been written to db.`)
+
+      remindJob(reminder, deps, () => {
+        console.log(`reminder with id of ${reminder.id} has reminded.`)
+
+        updateReminderInDB(
+          { ...reminder, hasReminded: !reminder.hasReminded },
+          deps,
+          () => {
+            console.log(
+              `reminder with id of ${reminder.id} has hasReminded prop changed.`
+            )
+          }
+        )
+      })
+    })
   }
 }
 

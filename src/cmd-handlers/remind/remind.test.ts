@@ -1,16 +1,20 @@
-import { getUnixTime, add } from "date-fns/fp"
-import { getReminder, timeDict } from "./remind"
+import { cmdDict } from "../../config"
+import { getReminder } from "./remind"
 import { Reminder } from "../../types"
 
 describe("command handler: remind", () => {
   let now: Date
-  const mockReminders: Reminder[] = []
+  const {
+    remind: { deps }
+  } = cmdDict
 
   beforeEach(() => {
     now = new Date()
   })
 
   it("creates a reminder from valid input", () => {
+    const { add, getUnixTime } = deps.dateFns
+
     expect(
       getReminder(
         {
@@ -18,9 +22,7 @@ describe("command handler: remind", () => {
           channelId: "someid",
           content: "4d this is a test"
         },
-        mockReminders,
-        { getUnixTime, add },
-        timeDict
+        { ...deps, getReminders: () => [] }
       )
     ).toEqual({
       id: 0,
@@ -43,9 +45,7 @@ describe("command handler: remind", () => {
           channelId: "someid",
           content: "invalid input"
         },
-        mockReminders,
-        { getUnixTime, add },
-        timeDict
+        { ...deps, getReminders: () => [] }
       )
     ).toBeFalsy()
   })

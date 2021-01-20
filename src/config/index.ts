@@ -1,10 +1,24 @@
-import { CommandDictionary } from "../types"
-import { getUnixTime, add } from "date-fns/fp"
-import { writeFile } from "fs"
+import { scheduleJob } from "node-schedule"
+import { getUnixTime, fromUnixTime, add } from "date-fns/fp"
+import { readFileSync, writeFile } from "fs"
 import remindHandler, { timeDict } from "../cmd-handlers/remind/remind"
-import reminders from "../data/reminders.json"
+import { readRemindersFromDB } from "../cmd-handlers/remind/remind-db"
+import { CommandDictionary, RemindDependencies } from "../types"
 
 export const remindersPath = `${process.cwd()}/src/data/reminders.json`
+
+export const remindDeps: RemindDependencies = {
+  getReminders: () =>
+    JSON.parse(readRemindersFromDB(remindersPath, readFileSync)),
+  remindersPath,
+  fileFns: {
+    readFile: readFileSync,
+    writeFile
+  },
+  dateFns: { getUnixTime, fromUnixTime, add },
+  timeDict,
+  scheduler: scheduleJob
+}
 
 export const cmdChar = "!"
 
@@ -12,6 +26,6 @@ export const cmdDict: CommandDictionary = {
   remind: {
     aliases: ["remind", "r"],
     handler: remindHandler,
-    deps: [reminders, remindersPath, writeFile, { getUnixTime, add }, timeDict]
+    deps: remindDeps
   }
 }

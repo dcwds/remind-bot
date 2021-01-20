@@ -1,27 +1,23 @@
 import { forEach } from "rambda"
-import { scheduleJob } from "node-schedule"
-import { writeFile } from "fs"
-import { fromUnixTime } from "date-fns/fp"
-import { Reminder } from "../../types"
 import { activeReminders } from "./remind-selectors"
-import reminders from "../../data/reminders.json"
+import { JobCallback } from "node-schedule"
+import { Reminder, RemindDependencies } from "../../types"
 
-export const makeReminderJobs = (
-  activeReminders: readonly Reminder[],
-  dateAPI: any,
-  writeFileFn: Function
+export const remindJob = (
+  reminder: Reminder,
+  deps: RemindDependencies,
+  cb: JobCallback
 ) => {
-  return forEach((job: Reminder) => {
-    return scheduleJob(dateAPI.fromUnixTime(job.remindAt), () => {
-      console.log(job)
-    })
-  }, activeReminders)
+  console.log("remind job queued.")
+
+  return deps.scheduler(deps.dateFns.fromUnixTime(reminder.remindAt), cb)
 }
 
-export const reminderJobs = makeReminderJobs(
-  activeReminders(reminders),
-  {
-    fromUnixTime
-  },
-  writeFile
-)
+export const scheduleReminderJobs = (
+  deps: RemindDependencies,
+  cb: JobCallback
+) =>
+  forEach(
+    (reminder: Reminder) => remindJob(reminder, deps, cb),
+    activeReminders(deps.getReminders())
+  )

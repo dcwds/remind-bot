@@ -1,10 +1,8 @@
 import dotenv from "dotenv"
 import Discord from "discord.js"
 import cmdParse from "./cmd-parse"
-import { cmdChar, cmdDict } from "./config"
-import { getUnixTime } from "date-fns"
-import { reminderJobs } from "./cmd-handlers/remind/remind-jobs"
-import reminders from "./data/reminders.json"
+import { cmdChar, cmdDict, remindDeps } from "./config"
+import { scheduleReminderJobs } from "./cmd-handlers/remind/remind-jobs"
 
 dotenv.config()
 
@@ -13,7 +11,11 @@ const client = new Discord.Client()
 client.on("ready", () => {
   console.log("listening.")
 
-  reminderJobs
+  /*
+  scheduleReminderJobs(remindDeps, () => {
+    console.log("")
+  })
+  */
 })
 
 client.on("message", (message) => {
@@ -24,7 +26,7 @@ client.on("message", (message) => {
   })
 
   if (cmd) {
-    handler(msg, ...deps)
+    handler(msg, deps)
   }
 })
 
