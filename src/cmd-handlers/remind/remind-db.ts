@@ -1,6 +1,6 @@
 import { append, filter, sortBy, prop } from "rambda"
 import { readFileSync, writeFileSync } from "fs"
-import { remindersPath } from "../../config"
+import config from "../../config"
 import { Reminder, DatabaseDependencies } from "../../types"
 
 const sortById = sortBy(prop("id"))
@@ -37,7 +37,7 @@ export const updateReminder = (
 
 export const withReminderDB = (operation: Function, reminder?: Reminder) => {
   const deps: DatabaseDependencies = {
-    remindersPath,
+    remindersPath: config.remindersPath,
     writeFileFn: writeFileSync,
     readFileFn: readFileSync
   }

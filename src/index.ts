@@ -1,8 +1,7 @@
-import dotenv from "dotenv"
 import cmdParse from "./cmd-parse"
-import { cmdPrefix, cmdDict, discord } from "./config"
+import config from "./config"
 
-dotenv.config()
+const { discord, discordBotToken, cmdPrefix, cmdDict } = config
 
 discord.on("ready", () => {
   console.log("listening.")
@@ -20,4 +19,4 @@ discord.on("message", (message) => {
   }
 })
 
-discord.login(process.env.DISCORD_BOT_TOKEN)
+discord.login(discordBotToken)

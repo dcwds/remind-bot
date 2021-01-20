@@ -1,13 +1,18 @@
 import { find, includes, keys, length, match, reduce } from "rambda"
 import { add, getUnixTime } from "date-fns/fp"
+import config from "../../config"
 import {
   withReminderDB,
   writeReminder,
   updateReminder,
   readReminders
 } from "./remind-db"
+import {
+  sendWithBot,
+  acknowledgeReminder,
+  notifyWithReminder
+} from "./remind-bot"
 import { scheduleRemindJob } from "./remind-jobs"
-import { sendWithBot, acknowledgeReminder } from "./remind-bot"
 import { Reminder, DiscordMessage } from "../../types"
 
 type TimeDictionary = typeof timeDict
@@ -87,7 +92,7 @@ const remind = (msg: DiscordMessage) => {
 
     withReminderDB(writeReminder, reminder)
 
-    sendWithBot(acknowledgeReminder, reminder)
+    sendWithBot(acknowledgeReminder, reminder.message.channelId, reminder)
 
     scheduleRemindJob(() => {
       console.log(`reminder with id of ${reminder.id} has reminded.`)
@@ -96,6 +101,8 @@ const remind = (msg: DiscordMessage) => {
         ...reminder,
         hasReminded: !reminder.hasReminded
       })
+
+      sendWithBot(notifyWithReminder, config.remindChannelId, reminder)
     }, reminder)
   }
 }
