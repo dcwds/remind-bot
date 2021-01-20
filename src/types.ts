@@ -1,9 +1,10 @@
-import { scheduleJob } from "node-schedule"
-import { readFileSync, writeFile } from "fs"
-import { add, getUnixTime, fromUnixTime } from "date-fns/fp"
-import { timeDict } from "./cmd-handlers/remind/remind"
+import { readFileSync, writeFileSync } from "fs"
 
-export type Dependencies = RemindDependencies
+export type DatabaseDependencies = {
+  remindersPath: string
+  writeFileFn: typeof writeFileSync
+  readFileFn: typeof readFileSync
+}
 
 export type DiscordMessage = {
   authorId: string
@@ -14,7 +15,6 @@ export type DiscordMessage = {
 export type CommandParserResults = {
   cmd: string | null
   handler: Function | null
-  deps: Dependencies | null
   msg: DiscordMessage | null
   error: string | null
 }
@@ -23,7 +23,6 @@ export type CommandDictionary = {
   [key: string]: {
     aliases: string[]
     handler: Function
-    deps: Dependencies
   }
 }
 
@@ -35,22 +34,6 @@ export type TimeUnit =
   | "weeks"
   | "months"
   | "years"
-
-export type RemindDependencies = {
-  getReminders: () => Reminder[]
-  remindersPath: string
-  fileFns: {
-    writeFile: typeof writeFile
-    readFile: typeof readFileSync
-  }
-  dateFns: {
-    getUnixTime: typeof getUnixTime
-    fromUnixTime: typeof fromUnixTime
-    add: typeof add
-  }
-  timeDict: typeof timeDict
-  scheduler: typeof scheduleJob
-}
 
 export type Reminder = {
   id: number

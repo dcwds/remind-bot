@@ -1,39 +1,54 @@
 import { append, filter, sortBy, prop } from "rambda"
-import { readFileSync, NoParamCallback } from "fs"
-import { Reminder, RemindDependencies } from "../../types"
+import { readFileSync, writeFileSync } from "fs"
+import { remindersPath } from "../../config"
+import { Reminder, DatabaseDependencies } from "../../types"
 
 const sortById = sortBy(prop("id"))
 
-export const readRemindersFromDB = (
-  remindersPath: string,
-  readFileFn: typeof readFileSync
-) => readFileFn(remindersPath, "utf-8")
+export const readReminders = (deps: DatabaseDependencies) =>
+  JSON.parse(deps.readFileFn(deps.remindersPath, "utf-8"))
 
-export const writeReminderToDB = (
+export const writeReminder = (
+  deps: DatabaseDependencies,
   reminder: Reminder,
-  deps: RemindDependencies,
-  cb: NoParamCallback
+  reminders: Reminder[]
 ) => {
-  const updatedReminders = JSON.stringify(
-    sortById(append(reminder, deps.getReminders()))
-  )
+  const updatedReminders = JSON.stringify(sortById(append(reminder, reminders)))
 
-  deps.fileFns.writeFile(deps.remindersPath, updatedReminders, "utf-8", cb)
+  deps.writeFileFn(deps.remindersPath, updatedReminders, "utf-8")
 }
 
-export const updateReminderInDB = (
+export const updateReminder = (
+  deps: DatabaseDependencies,
   reminder: Reminder,
-  deps: RemindDependencies,
-  cb: NoParamCallback
+  reminders: Reminder[]
 ) => {
   const updatedReminders = JSON.stringify(
     sortById(
       append(
         reminder,
-        filter((r) => r.id !== reminder.id, deps.getReminders())
+        filter((r) => r.id !== reminder.id, reminders)
       )
     )
   )
 
-  deps.fileFns.writeFile(deps.remindersPath, updatedReminders, "utf-8", cb)
+  deps.writeFileFn(deps.remindersPath, updatedReminders, "utf-8")
+}
+
+export const withReminderDB = (operation: Function, reminder?: Reminder) => {
+  const deps: DatabaseDependencies = {
+    remindersPath,
+    writeFileFn: writeFileSync,
+    readFileFn: readFileSync
+  }
+
+  if (reminder) {
+    // Reminder operations require a reference to reminders
+    // to properly update the DB.
+    const reminders = readReminders(deps)
+
+    return operation(deps, reminder, reminders)
+  } else {
+    return operation(deps)
+  }
 }

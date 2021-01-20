@@ -1,33 +1,23 @@
 import dotenv from "dotenv"
-import Discord from "discord.js"
 import cmdParse from "./cmd-parse"
-import { cmdChar, cmdDict, remindDeps } from "./config"
-import { scheduleReminderJobs } from "./cmd-handlers/remind/remind-jobs"
+import { cmdPrefix, cmdDict, discord } from "./config"
 
 dotenv.config()
 
-const client = new Discord.Client()
-
-client.on("ready", () => {
+discord.on("ready", () => {
   console.log("listening.")
-
-  /*
-  scheduleReminderJobs(remindDeps, () => {
-    console.log("")
-  })
-  */
 })
 
-client.on("message", (message) => {
-  const { cmd, handler, deps, msg } = cmdParse(cmdChar, cmdDict, {
+discord.on("message", (message) => {
+  const { cmd, handler, msg } = cmdParse(cmdPrefix, cmdDict, {
     authorId: message.author.id,
     channelId: message.channel.id,
     content: message.content
   })
 
   if (cmd) {
-    handler(msg, deps)
+    handler(msg)
   }
 })
 
-client.login(process.env.DISCORD_BOT_TOKEN)
+discord.login(process.env.DISCORD_BOT_TOKEN)

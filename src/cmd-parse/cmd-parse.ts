@@ -6,12 +6,12 @@ import {
 } from "../types"
 
 const cmdParse = (
-  cmdChar: string,
+  cmdPrefix: string,
   cmdDict: CommandDictionary,
   msg: DiscordMessage
 ): CommandParserResults => {
   const { authorId, channelId, content } = msg
-  const isCommandLike = cmdChar === content.substring(0, 1)
+  const isCommandLike = cmdPrefix === content.substring(0, 1)
 
   if (isCommandLike) {
     const parsedCmd = content.substring(1, content.indexOf(" "))
@@ -24,7 +24,6 @@ const cmdParse = (
       return {
         cmd: cmdFromDict,
         handler: cmdDict[cmdFromDict].handler,
-        deps: cmdDict[cmdFromDict].deps,
         msg: {
           authorId,
           channelId,
@@ -36,7 +35,6 @@ const cmdParse = (
       return {
         cmd: null,
         handler: null,
-        deps: null,
         msg: null,
         error: `Could not find command ${parsedCmd}`
       }
@@ -45,7 +43,6 @@ const cmdParse = (
     return {
       cmd: null,
       handler: null,
-      deps: null,
       msg: null,
       error: "No command found."
     }

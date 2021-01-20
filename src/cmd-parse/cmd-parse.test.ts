@@ -1,11 +1,11 @@
-import { cmdChar, cmdDict } from "../config"
+import { cmdPrefix, cmdDict } from "../config"
 import cmdParse from "./cmd-parse"
 
 describe("cmdParse", () => {
   let mockParse: Function
 
   beforeEach(() => {
-    mockParse = cmdParse(cmdChar, cmdDict)
+    mockParse = cmdParse(cmdPrefix, cmdDict)
   })
 
   it("parses successfully when using a valid command", () => {
@@ -18,7 +18,6 @@ describe("cmdParse", () => {
     ).toEqual({
       cmd: "remind",
       handler: cmdDict["remind"].handler,
-      deps: cmdDict["remind"].deps,
       msg: {
         authorId: "someid",
         channelId: "someid",
@@ -38,7 +37,6 @@ describe("cmdParse", () => {
     ).toEqual({
       cmd: "remind",
       handler: cmdDict["remind"].handler,
-      deps: cmdDict["remind"].deps,
       msg: {
         authorId: "someid",
         channelId: "someid",
