@@ -1,7 +1,8 @@
-import { cmdPrefix, cmdDict } from "../config"
+import config from "../config"
 import cmdParse from "./cmd-parse"
 
 describe("cmdParse", () => {
+  const { cmdPrefix, cmdDict } = config
   let mockParse: Function
 
   beforeEach(() => {
