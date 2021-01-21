@@ -1,14 +1,16 @@
+import Discord from "discord.js"
+import cmds from "./cmds"
 import cmdParse from "./cmd-parse"
 import config from "./config"
 
-const { discord, discordBotToken, cmdPrefix, cmdDict } = config
+export const discord = new Discord.Client()
 
 discord.on("ready", () => {
   console.log("listening.")
 })
 
 discord.on("message", (message) => {
-  const { cmd, handler, msg } = cmdParse(cmdPrefix, cmdDict, {
+  const { cmd, handler, msg } = cmdParse("!", cmds, {
     authorId: message.author.id,
     channelId: message.channel.id,
     content: message.content
@@ -19,4 +21,4 @@ discord.on("message", (message) => {
   }
 })
 
-discord.login(discordBotToken)
+discord.login(config.discordBotToken)

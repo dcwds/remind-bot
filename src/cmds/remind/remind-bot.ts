@@ -1,4 +1,4 @@
-import config from "../../config"
+import { discord } from "../.."
 import { TextChannel } from "discord.js"
 import { Reminder } from "../../types"
 
@@ -7,7 +7,7 @@ export const sendWithBot = (
   channelId: string,
   reminder: Reminder
 ) => {
-  const channel = config.discord.channels.cache.get(channelId) as TextChannel
+  const channel = discord.channels.cache.get(channelId) as TextChannel
 
   if (channel) {
     messageFn(channel, reminder)

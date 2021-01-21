@@ -1,18 +1,5 @@
 import { find, includes, keys, length, match, reduce } from "rambda"
 import { add, getUnixTime } from "date-fns/fp"
-import config from "../../config"
-import {
-  withReminderDB,
-  writeReminder,
-  updateReminder,
-  readReminders
-} from "./remind-db"
-import {
-  sendWithBot,
-  acknowledgeReminder,
-  notifyWithReminder
-} from "./remind-bot"
-import { scheduleRemindJob } from "./remind-jobs"
 import { Reminder, DiscordMessage } from "../../types"
 
 type TimeDictionary = typeof timeDict
@@ -55,7 +42,7 @@ const getReminderMessage = (textMatch: readonly string[]) =>
 const getTimeUnitFromDict = (unit: string | null, dict: TimeDictionary) =>
   find((keyword) => includes(unit, dict[keyword]), keys(dict))
 
-export const prepareReminder = (
+export default (
   msg: DiscordMessage,
   reminders: Reminder[]
 ): Reminder | null => {
@@ -83,28 +70,3 @@ export const prepareReminder = (
     return null
   }
 }
-
-const remind = (msg: DiscordMessage) => {
-  const reminder = prepareReminder(msg, withReminderDB(readReminders))
-
-  if (reminder) {
-    console.log(`created reminder with id of ${reminder.id}`)
-
-    withReminderDB(writeReminder, reminder)
-
-    sendWithBot(acknowledgeReminder, reminder.message.channelId, reminder)
-
-    scheduleRemindJob(() => {
-      console.log(`reminder with id of ${reminder.id} has reminded.`)
-
-      withReminderDB(updateReminder, {
-        ...reminder,
-        hasReminded: !reminder.hasReminded
-      })
-
-      sendWithBot(notifyWithReminder, config.remindChannelId, reminder)
-    }, reminder)
-  }
-}
-
-export default remind

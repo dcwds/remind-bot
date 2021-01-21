@@ -1,12 +1,17 @@
-import config from "../config"
 import cmdParse from "./cmd-parse"
 
 describe("cmdParse", () => {
-  const { cmdPrefix, cmdDict } = config
   let mockParse: Function
+  const mockCmds = [
+    {
+      name: "remind",
+      handler: () => {},
+      aliases: ["remind", "r"]
+    }
+  ]
 
   beforeEach(() => {
-    mockParse = cmdParse(cmdPrefix, cmdDict)
+    mockParse = cmdParse("!", mockCmds)
   })
 
   it("parses successfully when using a valid command", () => {
@@ -18,7 +23,7 @@ describe("cmdParse", () => {
       })
     ).toEqual({
       cmd: "remind",
-      handler: cmdDict["remind"].handler,
+      handler: mockCmds[0].handler,
       msg: {
         authorId: "someid",
         channelId: "someid",
@@ -37,7 +42,7 @@ describe("cmdParse", () => {
       })
     ).toEqual({
       cmd: "remind",
-      handler: cmdDict["remind"].handler,
+      handler: mockCmds[0].handler,
       msg: {
         authorId: "someid",
         channelId: "someid",
@@ -48,22 +53,22 @@ describe("cmdParse", () => {
   })
 
   it("parses with an error when an invalid command is used", () => {
-    expect(
-      mockParse({
-        authorId: "someid",
-        channelId: "someid",
-        content: "!badcommand this is a test"
-      }).error
-    ).toBeTruthy()
+    const { error } = mockParse({
+      authorId: "someid",
+      channelId: "someid",
+      content: "!badcommand this is a test"
+    })
+
+    expect(error).toBeTruthy()
   })
 
   it("parses with an error when no command is used", () => {
-    expect(
-      mockParse({
-        authorId: "someid",
-        channelId: "someid",
-        content: "this is a test"
-      }).error
-    ).toBeTruthy()
+    const { error } = mockParse({
+      authorId: "someid",
+      channelId: "someid",
+      content: "this is a test"
+    })
+
+    expect(error).toBeTruthy()
   })
 })

@@ -1,3 +1,3 @@
 import remind from "./remind"
 
-export default remind
+export default [remind]

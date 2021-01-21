@@ -1,13 +1,9 @@
-import { curry, find, includes, keys } from "rambda"
-import {
-  CommandDictionary,
-  CommandParserResults,
-  DiscordMessage
-} from "../types"
+import { curry, find, includes } from "rambda"
+import { Command, CommandParserResults, DiscordMessage } from "../types"
 
 const cmdParse = (
   cmdPrefix: string,
-  cmdDict: CommandDictionary,
+  cmds: Command[],
   msg: DiscordMessage
 ): CommandParserResults => {
   const { authorId, channelId, content } = msg
@@ -15,15 +11,15 @@ const cmdParse = (
 
   if (isCommandLike) {
     const parsedCmd = content.substring(1, content.indexOf(" "))
-    const cmdFromDict = find(
-      (cmd: string) => includes(parsedCmd, cmdDict[cmd].aliases),
-      keys(cmdDict) as string[]
+    const foundCmd = find(
+      (cmd: Command) => includes(parsedCmd, cmd.aliases),
+      cmds
     )
 
-    if (cmdFromDict) {
+    if (foundCmd) {
       return {
-        cmd: cmdFromDict,
-        handler: cmdDict[cmdFromDict].handler,
+        cmd: foundCmd.name,
+        handler: foundCmd.handler,
         msg: {
           authorId,
           channelId,

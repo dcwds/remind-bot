@@ -1,5 +1,5 @@
 import { add, getUnixTime } from "date-fns/fp"
-import { prepareReminder } from "./remind"
+import prepareReminder from "./remind-prepare"
 
 describe("command handler: remind", () => {
   let now: Date

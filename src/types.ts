@@ -19,11 +19,10 @@ export type CommandParserResults = {
   error: string | null
 }
 
-export type CommandDictionary = {
-  [key: string]: {
-    aliases: string[]
-    handler: Function
-  }
+export type Command = {
+  name: string
+  aliases: string[]
+  handler: Function
 }
 
 export type TimeUnit =
