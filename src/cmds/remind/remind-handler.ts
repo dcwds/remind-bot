@@ -1,11 +1,6 @@
 import config from "../../config"
 import prepareReminder from "./remind-prepare"
-import {
-  withReminderDB,
-  writeReminder,
-  updateReminder,
-  readReminders
-} from "./remind-db"
+import { withReminderDB, updateReminders, readReminders } from "./remind-db"
 import {
   sendWithBot,
   acknowledgeReminder,
@@ -20,17 +15,19 @@ export default (msg: DiscordMessage) => {
   if (reminder) {
     console.log(`created reminder with id of ${reminder.id}`)
 
-    withReminderDB(writeReminder, reminder)
+    withReminderDB(updateReminders, [reminder])
 
     sendWithBot(acknowledgeReminder, reminder.message.channelId, reminder)
 
     scheduleRemindJob(() => {
       console.log(`reminder with id of ${reminder.id} has reminded.`)
 
-      withReminderDB(updateReminder, {
-        ...reminder,
-        hasReminded: !reminder.hasReminded
-      })
+      withReminderDB(updateReminders, [
+        {
+          ...reminder,
+          hasReminded: !reminder.hasReminded
+        }
+      ])
 
       sendWithBot(notifyWithReminder, config.remindChannelId, reminder)
     }, reminder)

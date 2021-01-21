@@ -1,4 +1,4 @@
-import { append, filter, sortBy, prop } from "rambda"
+import { append, concat, filter, includes, sortBy, prop, map } from "rambda"
 import { readFileSync, writeFileSync } from "fs"
 import config from "../../config"
 import { Reminder, DatabaseDependencies } from "../../types"
@@ -8,26 +8,17 @@ const sortById = sortBy(prop("id"))
 export const readReminders = (deps: DatabaseDependencies) =>
   JSON.parse(deps.readFileFn(deps.remindersPath, "utf-8"))
 
-export const writeReminder = (
+export const updateReminders = (
   deps: DatabaseDependencies,
-  reminder: Reminder,
-  reminders: Reminder[]
+  reminders: Reminder[],
+  remindersToUpdate: Reminder[]
 ) => {
-  const updatedReminders = JSON.stringify(sortById(append(reminder, reminders)))
-
-  deps.writeFileFn(deps.remindersPath, updatedReminders, "utf-8")
-}
-
-export const updateReminder = (
-  deps: DatabaseDependencies,
-  reminder: Reminder,
-  reminders: Reminder[]
-) => {
+  const reminderIdsToUpdate = map((r) => r.id, remindersToUpdate)
   const updatedReminders = JSON.stringify(
     sortById(
-      append(
-        reminder,
-        filter((r) => r.id !== reminder.id, reminders)
+      concat(
+        remindersToUpdate,
+        filter((r) => !includes(r.id, reminderIdsToUpdate), reminders)
       )
     )
   )
@@ -35,19 +26,22 @@ export const updateReminder = (
   deps.writeFileFn(deps.remindersPath, updatedReminders, "utf-8")
 }
 
-export const withReminderDB = (operation: Function, reminder?: Reminder) => {
+export const withReminderDB = (
+  operation: Function,
+  remindersToUpdate?: Reminder[]
+) => {
   const deps: DatabaseDependencies = {
     remindersPath: config.remindersPath,
     writeFileFn: writeFileSync,
     readFileFn: readFileSync
   }
 
-  if (reminder) {
-    // Reminder operations require a reference to reminders
+  if (remindersToUpdate) {
+    // Most operations require a reference to reminders
     // to properly update the DB.
     const reminders = readReminders(deps)
 
-    return operation(deps, reminder, reminders)
+    operation(deps, reminders, remindersToUpdate)
   } else {
     return operation(deps)
   }

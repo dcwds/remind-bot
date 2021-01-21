@@ -1,7 +1,7 @@
 import { add, getUnixTime } from "date-fns/fp"
 import prepareReminder from "./remind-prepare"
 
-describe("command handler: remind", () => {
+describe("command: remind", () => {
   let now: Date
 
   beforeEach(() => {
