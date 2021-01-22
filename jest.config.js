@@ -1,4 +1,4 @@
 module.exports = {
   testEnvironment: "node",
-  testPathIgnorePatterns: ["/module_modules", "/dist", "/src/data"]
+  testPathIgnorePatterns: ["/node_modules", "/dist", "/src/data"]
 }

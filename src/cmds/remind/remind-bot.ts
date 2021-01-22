@@ -1,5 +1,6 @@
 import { filter, forEach, join, map, uniq } from "rambda"
 import { discord } from "../.."
+import { formatToPrettyDate } from "../../utils"
 import { TextChannel } from "discord.js"
 import { Reminder } from "../../types"
 
@@ -17,10 +18,23 @@ export const sendWithBot = (
   }
 }
 
-export const acknowledgeReminder = (channel: TextChannel, reminder: Reminder) =>
-  channel.send(
-    `<@${reminder.message.authorId}>\nScheduled: ${reminder.message.content}`
-  )
+export const acknowledgeReminder = (
+  channel: TextChannel,
+  reminder: Reminder
+) => {
+  const embed = {
+    title: `:alarm_clock:\u2000${reminder.message.content}`,
+    description: `Scheduled for ${formatToPrettyDate(
+      reminder.createdAt,
+      reminder.remindAt
+    )}\n<@${reminder.message.authorId}>`,
+    footer: {
+      text: `To delete, use: !r-del ${reminder.id}`
+    }
+  }
+
+  channel.send({ embed })
+}
 
 export const notifyWithReminder = (channel: TextChannel, reminder: Reminder) =>
   channel.send(
