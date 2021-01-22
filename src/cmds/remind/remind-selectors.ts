@@ -9,4 +9,4 @@ export const activeReminders = (reminders: Reminder[]) =>
   filter((r) => r.remindAt > getUnixTime(new Date()), reminders)
 
 export const missedReminders = (reminders: Reminder[]) =>
-  difference(activeReminders(reminders), reminders)
+  difference(reminders, activeReminders(reminders))

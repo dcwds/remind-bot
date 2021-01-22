@@ -1,4 +1,4 @@
-import { concat, filter, includes, sortBy, prop, map } from "rambda"
+import { concat, filter, includes, sortBy, prop } from "rambda"
 import { readFileSync, writeFileSync } from "fs"
 import { reminderIds } from "../remind/remind-selectors"
 import config from "../../config"
@@ -6,7 +6,7 @@ import { Reminder, DatabaseDependencies } from "../../types"
 
 const sortById = sortBy(prop("id"))
 
-export const readReminders = (deps: DatabaseDependencies) =>
+export const readReminders = (deps: DatabaseDependencies): Reminder[] =>
   JSON.parse(deps.readFileFn(deps.remindersPath, "utf-8"))
 
 export const updateReminders = (
