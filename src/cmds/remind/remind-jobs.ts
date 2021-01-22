@@ -2,7 +2,7 @@ import { forEach } from "rambda"
 import { fromUnixTime } from "date-fns"
 import { scheduleJob } from "node-schedule"
 
-import { withReminderDB, updateReminders } from "../remind/remind-db"
+import { withReminderDB, deleteReminders } from "../remind/remind-db"
 import { sendWithBot, notifyWithReminder } from "../remind/remind-bot"
 import { Reminder } from "../../types"
 
@@ -17,12 +17,7 @@ export const scheduleRemindJobs = (reminders: Reminder[]) =>
 export const reminderAction = (reminder: Reminder) => {
   console.log(`reminder with id of ${reminder.id} has reminded.`)
 
-  withReminderDB(updateReminders, [
-    {
-      ...reminder,
-      hasReminded: !reminder.hasReminded
-    }
-  ])
+  withReminderDB(deleteReminders, [reminder])
 
   sendWithBot(notifyWithReminder, config.remindChannelId, reminder)
 }

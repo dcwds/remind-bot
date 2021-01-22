@@ -1,5 +1,6 @@
-import { append, concat, filter, includes, sortBy, prop, map } from "rambda"
+import { concat, filter, includes, sortBy, prop, map } from "rambda"
 import { readFileSync, writeFileSync } from "fs"
+import { reminderIds } from "../remind/remind-selectors"
 import config from "../../config"
 import { Reminder, DatabaseDependencies } from "../../types"
 
@@ -11,15 +12,28 @@ export const readReminders = (deps: DatabaseDependencies) =>
 export const updateReminders = (
   deps: DatabaseDependencies,
   reminders: Reminder[],
-  remindersToUpdate: Reminder[]
+  remindersPayload: Reminder[]
 ) => {
-  const reminderIdsToUpdate = map((r) => r.id, remindersToUpdate)
   const updatedReminders = JSON.stringify(
     sortById(
       concat(
-        remindersToUpdate,
-        filter((r) => !includes(r.id, reminderIdsToUpdate), reminders)
+        remindersPayload,
+        filter((r) => !includes(r.id, reminderIds(remindersPayload)), reminders)
       )
+    )
+  )
+
+  deps.writeFileFn(deps.remindersPath, updatedReminders, "utf-8")
+}
+
+export const deleteReminders = (
+  deps: DatabaseDependencies,
+  reminders: Reminder[],
+  remindersPayload: Reminder[]
+) => {
+  const updatedReminders = JSON.stringify(
+    sortById(
+      filter((r) => !includes(r.id, reminderIds(remindersPayload)), reminders)
     )
   )
 
@@ -28,7 +42,7 @@ export const updateReminders = (
 
 export const withReminderDB = (
   operation: Function,
-  remindersToUpdate?: Reminder[]
+  remindersPayload?: Reminder[]
 ) => {
   const deps: DatabaseDependencies = {
     remindersPath: config.remindersPath,
@@ -36,12 +50,12 @@ export const withReminderDB = (
     readFileFn: readFileSync
   }
 
-  if (remindersToUpdate) {
+  if (remindersPayload) {
     // Most operations require a reference to reminders
     // to properly update the DB.
     const reminders = readReminders(deps)
 
-    operation(deps, reminders, remindersToUpdate)
+    operation(deps, reminders, remindersPayload)
   } else {
     return operation(deps)
   }

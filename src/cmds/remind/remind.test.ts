@@ -26,8 +26,7 @@ describe("command: remind", () => {
         content: "this is a test"
       },
       createdAt: getUnixTime(now),
-      remindAt: getUnixTime(add({ days: 4 }, now)),
-      hasReminded: false
+      remindAt: getUnixTime(add({ days: 4 }, now))
     })
   })
 

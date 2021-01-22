@@ -39,5 +39,4 @@ export type Reminder = {
   message: DiscordMessage
   createdAt: number
   remindAt: number
-  hasReminded: boolean
 }

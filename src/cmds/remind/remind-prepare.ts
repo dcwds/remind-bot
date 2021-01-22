@@ -63,8 +63,7 @@ export default (
         content: parsedMessage
       },
       createdAt: getUnixTime(now),
-      remindAt: getUnixTime(add({ [timeUnit]: timeAmount }, now)),
-      hasReminded: false
+      remindAt: getUnixTime(add({ [timeUnit]: timeAmount }, now))
     }
   } else {
     return null
