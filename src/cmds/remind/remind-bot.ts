@@ -23,11 +23,11 @@ export const acknowledgeReminder = (
   reminder: Reminder
 ) => {
   const embed = {
+    color: "#4F46E5",
     title: `:alarm_clock:\u2000${reminder.message.content}`,
-    description: `Scheduled for ${formatToPrettyDate(
-      reminder.createdAt,
-      reminder.remindAt
-    )}\n<@${reminder.message.authorId}>`,
+    description: `Scheduled by <@${
+      reminder.message.authorId
+    }> for ${formatToPrettyDate(reminder.createdAt, reminder.remindAt)}`,
     footer: {
       text: `To delete, use: !r-del ${reminder.id}`
     }
@@ -36,11 +36,18 @@ export const acknowledgeReminder = (
   channel.send({ embed })
 }
 
-export const notifyWithReminder = (channel: TextChannel, reminder: Reminder) =>
-  channel.send(
-    `<@${reminder.message.authorId}>\n Reminder: ${reminder.message.content}`
-  )
+export const notifyWithReminder = (
+  channel: TextChannel,
+  reminder: Reminder
+) => {
+  const embed = {
+    color: "#FCD34D",
+    title: `:alarm_clock:\u2000${reminder.message.content}`,
+    description: `<@${reminder.message.authorId}>, you have been reminded :smile:`
+  }
 
+  channel.send({ embed })
+}
 export const notifyWithMissedReminders = (
   channel: TextChannel,
   reminders: Reminder[]
