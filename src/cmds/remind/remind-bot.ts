@@ -3,6 +3,7 @@ import { discord } from "../.."
 import { formatToPrettyDate } from "../../utils"
 import { TextChannel } from "discord.js"
 import { Reminder } from "../../types"
+import config from "../../config"
 
 export const sendWithBot = (
   messageFn: Function,
@@ -29,7 +30,7 @@ export const acknowledgeReminder = (
       reminder.message.authorId
     }> for ${formatToPrettyDate(reminder.createdAt, reminder.remindAt)}`,
     footer: {
-      text: `To delete, use: !r-del ${reminder.id}`
+      text: `To delete, use: ${config.cmdPrefix}rd ${reminder.id}`
     }
   }
 
@@ -67,4 +68,33 @@ export const notifyWithMissedReminders = (
       `<@${id}>\nSorry, while I was not running, the following reminders were missed:\n${remindersByAuthor}`
     )
   }, authorIds)
+}
+
+export const notifyWithActiveReminders = (
+  channel: TextChannel,
+  reminders: Reminder[]
+) => {
+  const authorId = reminders[0].message.authorId
+  const remindersBlurb = join(
+    "\n\n",
+    map(
+      (r) =>
+        `**${r.message.content}**\nScheduled for ${formatToPrettyDate(
+          r.createdAt,
+          r.remindAt
+        )} \u2013 ID ${r.id}`,
+      reminders
+    )
+  )
+
+  const embed = {
+    color: "#4F46E5",
+    title: ":alarm_clock:\u2000Reminders",
+    description: `<@${authorId}>, you have ${reminders.length} reminders scheduled.\n\n${remindersBlurb}`,
+    footer: {
+      text: `To delete a reminder, use ${config.cmdPrefix}rd followed by an ID`
+    }
+  }
+
+  channel.send({ embed })
 }

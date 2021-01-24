@@ -33,7 +33,7 @@ discord.on("ready", () => {
 })
 
 discord.on("message", (message) => {
-  const { cmd, handler, msg } = cmdParse("!", cmds, {
+  const { cmd, handler, msg } = cmdParse(config.cmdPrefix, cmds, {
     authorId: message.author.id,
     channelId: message.channel.id,
     content: message.content

@@ -1,4 +1,4 @@
-import handler from "./remind-handler"
+import handler from "./remind-create-handler"
 
 export default {
   name: "remind",

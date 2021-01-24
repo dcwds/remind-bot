@@ -1,3 +1,4 @@
+import { pipe, length, match } from "rambda"
 import { fromUnixTime } from "date-fns/fp"
 import { formatRelative } from "date-fns"
 import enUS from "date-fns/locale/en-US"
@@ -21,3 +22,8 @@ export const formatToPrettyDate = (
       formatRelative: (token) => customDateFormatting[token]
     }
   })
+
+export const getMatchWithRegex = pipe(
+  (pattern: RegExp, str: string) => match(pattern, str),
+  (matches: readonly string[]) => (length(matches) ? matches[0] : null)
+)

@@ -10,3 +10,6 @@ export const activeReminders = (reminders: Reminder[]) =>
 
 export const missedReminders = (reminders: Reminder[]) =>
   difference(reminders, activeReminders(reminders))
+
+export const remindersByAuthorId = (authorId: string, reminders: Reminder[]) =>
+  filter((r) => r.message.authorId === authorId, reminders)

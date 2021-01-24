@@ -1,3 +1,4 @@
-import remind from "./remind"
+import remind from "./remind/remind-create"
+import remindList from "./remind/remind-list"
 
-export default [remind]
+export default [remind, remindList]

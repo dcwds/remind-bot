@@ -1,8 +1,8 @@
-import prepareReminder from "./remind-prepare"
-import { withReminderDB, updateReminders, readReminders } from "./remind-db"
-import { sendWithBot, acknowledgeReminder } from "./remind-bot"
-import { scheduleRemindJobs } from "./remind-jobs"
-import { DiscordMessage } from "../../types"
+import prepareReminder from "../remind-prepare"
+import { withReminderDB, updateReminders, readReminders } from "../remind-db"
+import { sendWithBot, acknowledgeReminder } from "../remind-bot"
+import { scheduleRemindJobs } from "../remind-jobs"
+import { DiscordMessage } from "../../../types"
 
 export default (msg: DiscordMessage) => {
   const reminder = prepareReminder(msg, withReminderDB(readReminders))

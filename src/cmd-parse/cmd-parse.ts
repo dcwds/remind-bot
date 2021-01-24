@@ -1,4 +1,5 @@
-import { curry, find, includes } from "rambda"
+import { curry, find, includes, map, split, trim } from "rambda"
+import { getMatchWithRegex } from "../utils"
 import { Command, CommandParserResults, DiscordMessage } from "../types"
 
 const cmdParse = (
@@ -7,14 +8,20 @@ const cmdParse = (
   msg: DiscordMessage
 ): CommandParserResults => {
   const { authorId, channelId, content } = msg
-  const isCommandLike = cmdPrefix === content.substring(0, 1)
 
-  if (isCommandLike) {
-    const parsedCmd = content.substring(1, content.indexOf(" "))
-    const foundCmd = find(
-      (cmd: Command) => includes(parsedCmd, cmd.aliases),
-      cmds
+  const msgArgs = map(trim, split(" ", content))
+  const foundCmdPrefix = getMatchWithRegex(
+    new RegExp(`^${cmdPrefix}`, "i"),
+    msgArgs[0]
+  )
+
+  if (foundCmdPrefix) {
+    const cmdLike = getMatchWithRegex(
+      new RegExp(`[^${cmdPrefix}].*`, "i"),
+      msgArgs[0]
     )
+
+    const foundCmd = find((cmd) => includes(cmdLike, cmd.aliases), cmds)
 
     if (foundCmd) {
       return {
@@ -32,7 +39,7 @@ const cmdParse = (
         cmd: null,
         handler: null,
         msg: null,
-        error: `Could not find command ${parsedCmd}`
+        error: `Could not find command ${cmdLike}`
       }
     }
   } else {
