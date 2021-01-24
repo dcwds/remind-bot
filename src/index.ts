@@ -12,6 +12,7 @@ import {
   missedReminders
 } from "./cmds/remind/remind-selectors"
 
+import { getDiscordRoleIds } from "./utils"
 import config from "./config"
 import { Reminder } from "./types"
 
@@ -34,7 +35,10 @@ discord.on("ready", () => {
 
 discord.on("message", (message) => {
   const { cmd, handler, msg } = cmdParse(config.cmdPrefix, cmds, {
-    authorId: message.author.id,
+    author: {
+      id: message.author.id,
+      roles: getDiscordRoleIds(message.member)
+    },
     channelId: message.channel.id,
     content: message.content
   })

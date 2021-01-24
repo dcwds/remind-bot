@@ -7,7 +7,7 @@ const cmdParse = (
   cmds: Command[],
   msg: DiscordMessage
 ): CommandParserResults => {
-  const { authorId, channelId, content } = msg
+  const { author, channelId, content } = msg
   const msgArgs = map(trim, split(" ", content))
 
   const foundCmdPrefix = getMatchWithRegex(
@@ -28,7 +28,10 @@ const cmdParse = (
         cmd: foundCmd.name,
         handler: foundCmd.handler,
         msg: {
-          authorId,
+          author: {
+            id: author.id,
+            roles: author.roles
+          },
           channelId,
           content: join(" ", drop(1, msgArgs))
         },

@@ -7,7 +7,10 @@ export type DatabaseDependencies = {
 }
 
 export type DiscordMessage = {
-  authorId: string
+  author: {
+    id: string
+    roles: readonly string[]
+  }
   channelId: string
   content: string
 }
@@ -36,7 +39,10 @@ export type TimeUnit =
 
 export type Reminder = {
   id: number
-  message: Pick<DiscordMessage, "authorId" | "channelId">
+  message: {
+    authorId: string
+    channelId: string
+  }
   createdAt: number
   remindAt: number
   text: string

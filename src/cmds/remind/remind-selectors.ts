@@ -1,4 +1,4 @@
-import { difference, filter, map, reduce } from "rambda"
+import { difference, filter, includes, map, reduce } from "rambda"
 import { getUnixTime } from "date-fns"
 import { Reminder } from "../../types"
 
@@ -14,5 +14,10 @@ export const activeReminders = (reminders: Reminder[]) =>
 export const missedReminders = (reminders: Reminder[]) =>
   difference(reminders, activeReminders(reminders))
 
-export const remindersByAuthorId = (authorId: string, reminders: Reminder[]) =>
-  filter((r) => r.message.authorId === authorId, reminders)
+export const remindersByIds = (ids: number[], reminders: Reminder[]) =>
+  filter((r) => includes(r.id, ids), reminders)
+
+export const remindersByAuthorIds = (
+  authorIds: string[],
+  reminders: Reminder[]
+) => filter((r) => includes(r.message.authorId, authorIds), reminders)

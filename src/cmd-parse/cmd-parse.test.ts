@@ -17,7 +17,9 @@ describe("cmdParse", () => {
   it("parses successfully when using a valid command", () => {
     expect(
       mockParse({
-        authorId: "someid",
+        author: {
+          id: "someid"
+        },
         channelId: "someid",
         content: "!remind 4d this is a test"
       })
@@ -25,7 +27,9 @@ describe("cmdParse", () => {
       cmd: "remind",
       handler: mockCmds[0].handler,
       msg: {
-        authorId: "someid",
+        author: {
+          id: "someid"
+        },
         channelId: "someid",
         content: "4d this is a test"
       },
@@ -36,7 +40,9 @@ describe("cmdParse", () => {
   it("parses successfully when using a valid command alias", () => {
     expect(
       mockParse({
-        authorId: "someid",
+        author: {
+          id: "someid"
+        },
         channelId: "someid",
         content: "!r 4d this is a test"
       })
@@ -44,7 +50,9 @@ describe("cmdParse", () => {
       cmd: "remind",
       handler: mockCmds[0].handler,
       msg: {
-        authorId: "someid",
+        author: {
+          id: "someid"
+        },
         channelId: "someid",
         content: "4d this is a test"
       },

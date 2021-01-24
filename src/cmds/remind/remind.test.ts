@@ -12,7 +12,9 @@ describe("command: remind", () => {
     expect(
       prepareReminder(
         {
-          authorId: "someid",
+          author: {
+            id: "someid"
+          },
           channelId: "someid",
           content: "4d this is a test"
         },
@@ -34,7 +36,9 @@ describe("command: remind", () => {
     expect(
       prepareReminder(
         {
-          authorId: "someid",
+          author: {
+            id: "someid"
+          },
           channelId: "someid",
           content: "invalid input"
         },

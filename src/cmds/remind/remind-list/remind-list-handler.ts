@@ -1,12 +1,12 @@
 import { withReminderDB, readReminders } from "../remind-db"
 import { sendWithBot, notifyWithActiveReminders } from "../remind-bot"
-import { remindersByAuthorId } from "../remind-selectors"
+import { remindersByAuthorIds } from "../remind-selectors"
 import { Reminder, DiscordMessage } from "../../../types"
 import config from "../../../config"
 
 export default (msg: DiscordMessage) => {
-  const authorReminders = remindersByAuthorId(
-    msg.authorId,
+  const authorReminders = remindersByAuthorIds(
+    [msg.author.id],
     withReminderDB(readReminders)
   ) as Reminder[]
 

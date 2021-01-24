@@ -18,7 +18,7 @@ export default (
   msg: DiscordMessage,
   reminders: Reminder[]
 ): Reminder | null => {
-  const { authorId, channelId, content } = msg
+  const { author, channelId, content } = msg
   const msgArgs = map(trim, split(" ", content))
 
   const timeAmount = getMatchWithRegex(new RegExp("^\\d+", "i"), msgArgs[0])
@@ -38,7 +38,7 @@ export default (
     return {
       id: nextReminderId(reminders),
       message: {
-        authorId,
+        authorId: author.id,
         channelId
       },
       createdAt: getUnixTime(now),
