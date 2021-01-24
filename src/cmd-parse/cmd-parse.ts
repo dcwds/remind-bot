@@ -1,4 +1,4 @@
-import { curry, find, includes, map, split, trim } from "rambda"
+import { curry, drop, find, includes, join, map, split, trim } from "rambda"
 import { getMatchWithRegex } from "../utils"
 import { Command, CommandParserResults, DiscordMessage } from "../types"
 
@@ -8,8 +8,8 @@ const cmdParse = (
   msg: DiscordMessage
 ): CommandParserResults => {
   const { authorId, channelId, content } = msg
-
   const msgArgs = map(trim, split(" ", content))
+
   const foundCmdPrefix = getMatchWithRegex(
     new RegExp(`^${cmdPrefix}`, "i"),
     msgArgs[0]
@@ -30,7 +30,7 @@ const cmdParse = (
         msg: {
           authorId,
           channelId,
-          content: content.substring(content.indexOf(" ") + 1, content.length)
+          content: join(" ", drop(1, msgArgs))
         },
         error: null
       }

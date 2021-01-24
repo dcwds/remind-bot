@@ -22,11 +22,11 @@ describe("command: remind", () => {
       id: 0,
       message: {
         authorId: "someid",
-        channelId: "someid",
-        content: "this is a test"
+        channelId: "someid"
       },
       createdAt: getUnixTime(now),
-      remindAt: getUnixTime(add({ days: 4 }, now))
+      remindAt: getUnixTime(add({ days: 4 }, now)),
+      text: "this is a test"
     })
   })
 

@@ -1,6 +1,9 @@
-import { difference, filter, map } from "rambda"
+import { difference, filter, map, reduce } from "rambda"
 import { getUnixTime } from "date-fns"
 import { Reminder } from "../../types"
+
+export const nextReminderId = (reminders: Reminder[]) =>
+  reduce((maxId, reminder) => Math.max(reminder.id, maxId), -1, reminders) + 1
 
 export const reminderIds = (reminders: Reminder[]) =>
   map((r) => r.id, reminders)

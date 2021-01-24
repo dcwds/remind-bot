@@ -36,7 +36,8 @@ export type TimeUnit =
 
 export type Reminder = {
   id: number
-  message: DiscordMessage
+  message: Pick<DiscordMessage, "authorId" | "channelId">
   createdAt: number
   remindAt: number
+  text: string
 }

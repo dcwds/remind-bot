@@ -25,7 +25,7 @@ export const acknowledgeReminder = (
 ) => {
   const embed = {
     color: "#4F46E5",
-    title: `:alarm_clock:\u2000${reminder.message.content}`,
+    title: `:alarm_clock:\u2000${reminder.text}`,
     description: `Scheduled by <@${
       reminder.message.authorId
     }> for ${formatToPrettyDate(reminder.createdAt, reminder.remindAt)}`,
@@ -43,7 +43,7 @@ export const notifyWithReminder = (
 ) => {
   const embed = {
     color: "#FCD34D",
-    title: `:alarm_clock:\u2000${reminder.message.content}`,
+    title: `:alarm_clock:\u2000${reminder.text}`,
     description: `<@${reminder.message.authorId}>, you have been reminded :smile:`
   }
 
@@ -59,7 +59,7 @@ export const notifyWithMissedReminders = (
     const remindersByAuthor = join(
       "\n",
       map(
-        (r: Reminder) => r.message.content,
+        (r: Reminder) => r.text,
         filter((r) => r.message.authorId === id, reminders)
       )
     )
@@ -79,7 +79,7 @@ export const notifyWithActiveReminders = (
     "\n\n",
     map(
       (r) =>
-        `**${r.message.content}**\nScheduled for ${formatToPrettyDate(
+        `**${r.text}**\nScheduled for ${formatToPrettyDate(
           r.createdAt,
           r.remindAt
         )} \u2013 ID ${r.id}`,
