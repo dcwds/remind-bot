@@ -25,7 +25,7 @@ deploy:
     - ssh -i $ID_ED25519 -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY"
     - ssh -i $ID_ED25519 -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "docker pull $TAG_COMMIT"
     - ssh -i $ID_ED25519 -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "docker container rm -f remind-bot || true"
-    - ssh -i $ID_ED25519 -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "docker run -d -p 80:80 --name remind-bot $TAG_COMMIT --env-file ~/remind-bot/.env"
+    - ssh -i $ID_ED25519 -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "docker run -d -p 80:80 --env-file ~/remind-bot/.env --name remind-bot $TAG_COMMIT"
   environment:
     name: production
   only:
